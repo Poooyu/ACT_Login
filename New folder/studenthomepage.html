@@ -1,0 +1,187 @@
+<?php
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] != true || $_SESSION['role'] != 'student') {
+    header('Location: index.php');
+    exit;
+}
+$student_id = $_SESSION['student_id'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $report = $_POST['report'];
+    $file = fopen("reports/$student_id.txt", "w");
+    fwrite($file, $report);
+    fclose($file);
+    header('Location: success.php');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content:center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ADD8E6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 0px;
+        }
+        h1 {
+            text-align: center;
+            color: #2F4F4F;
+        }
+        .container {
+            background: Skyblue;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1000px;
+            margin-bottom: 40px;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: transform 0.3s ease-in-out;
+            margin: 10px;
+            /* Added margin to input field container */
+            border: 1px solid #007bff;
+            /* Changed margin color to blue */
+        }
+        .input-container:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .input-field {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #fff;
+            /* Changed input field color to white */
+            margin: 5px;
+            /* Added margin to input field */
+            border: 1px solid #ccc;
+            /* Changed margin color to grey */
+        }
+        .icon-label {
+            width: 20%;
+            text-align: center;
+            padding: 10px;
+        }
+        .icon-label i {
+            font-size: 24px;
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #4CAF50;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .button-container:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .button-field {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: transparent;
+            color: #fff;
+        }
+        .logout-button {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+            color: #fff;
+            text-decoration: none;
+        }.logout-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .report-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .report-field {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            background-color: #fff;
+            /* Changed input field color to white */
+            margin: 5px;
+            /* Added margin to input field */
+            border: 1px solid #ccc;
+            /* Changed margin color to grey */
+            height: 200px;
+        }
+        .report-field:focus {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <h1>Welcome to the Immersion Report Website!</h1>
+        <div class="report-container">
+            <form action="" method="post">
+                <textarea class="report-field" name="report" placeholder="Enter your immersion report here..."></textarea>
+                <div style="height: 40px;"></div>
+                <button class="button-container" type="submit">
+                    <span class="button-field">Submit Report</span>
+                </button>
+            </form>
+        </div>
+        <?php if (file_exists("feedback/$student_id.txt")) { ?>
+            <div class="feedback-container">
+                <h2>Feedback from Teacher:</h2>
+                <p><?php echo file_get_contents("feedback/$student_id.txt"); ?></p>
+            </div>
+        <?php } ?>
+        <p><form action="logout.php" method="post"><button type="submit" class="logout-button">Log out</button></form></p>
+    </div>
+</body>
+</html>
